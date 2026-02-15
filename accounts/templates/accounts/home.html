@@ -1,0 +1,183 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Quinta da Ponte" %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f6fb;
+            color: #333;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2a6fd6);
+            color: white;
+            padding: 20px 20px 28px;
+            border-bottom-left-radius: 22px;
+            border-bottom-right-radius: 22px;
+            position: relative;
+        }
+
+        .lang-select {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+        }
+
+        .lang-select select {
+            background: white;
+            color: #1e3c72;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .lang-select option {
+            color: #1e3c72;
+        }
+
+        .header h2 {
+            margin: 10px 0 0;
+            font-size: 22px;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* CONTEÚDO */
+        .container {
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px 15px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(42, 111, 214, 0.25);
+        }
+
+        .icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO -->
+    <div class="header">
+
+        <!-- SELETOR DE IDIOMA -->
+        <form action="{% url 'set_language' %}" method="post"
+              style="position:absolute; top:20px; right:20px;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+
+            <select name="language" onchange="this.form.submit()"
+                    style="
+                        padding:6px 10px;
+                        border-radius:8px;
+                        border:none;
+                        font-size:14px;
+                        background:white;
+                        color:#1e3c72;
+                    ">
+                {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}"
+                        {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <h2>
+            {% blocktrans with name=guest.user.first_name|default:_("Hóspede") %}
+                Olá {{ name }} 👋
+            {% endblocktrans %}
+        </h2>
+
+        <p>
+            {% blocktrans with room=guest.room %}
+                Quarto {{ room }}
+            {% endblocktrans %}
+        </p>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <div class="container">
+        <div class="grid">
+
+            <div class="card">
+                <div class="icon">💬</div>
+                <div class="label">{% trans "Falar connosco" %}</div>
+            </div>
+
+            <a href="/breakfast/" style="text-decoration:none;">
+                <div class="card">
+                    <div class="icon">🍳</div>
+                    <div class="label">{% trans "Pequeno-almoço" %}</div>
+                </div>
+            </a>
+
+            <div class="card">
+                <div class="icon">☕</div>
+                <div class="label">{% trans "Cafetaria" %}</div>
+            </div>
+
+            <div class="card">
+                <div class="icon">🍽️</div>
+                <div class="label">{% trans "Almoço / Jantar" %}</div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            {% trans "Quinta da Ponte · Alojamento Local" %}
+        </div>
+    </div>
+
+</body>
+</html>
