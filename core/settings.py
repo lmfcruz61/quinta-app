@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("image/svg+xml", ".svg", True)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rooms',
     'accounts',
+    'places',
+    
 ]
 
 MIDDLEWARE = [
@@ -132,3 +139,10 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (41.694, -8.830),  # coordenadas da tua Quinta
+    'DEFAULT_ZOOM': 14,
+}
+GOOGLE_MAPS_API_KEY = "AIzaSyB50sPw6TzffZ6ktSASw5lXkpIfR-GlUC8"

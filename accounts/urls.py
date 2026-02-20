@@ -5,4 +5,5 @@ urlpatterns = [
     path("login/", guest_login, name="guest_login"),
     path("home/", guest_home, name="guest_home"),
     path("breakfast/", breakfast, name="breakfast"),
+    path("home/", guest_home, name="home"),
 ]

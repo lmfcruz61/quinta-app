@@ -1,0 +1,73 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Map" %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2a6fd6);
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        #map {
+            height: calc(100vh - 70px);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="{% url 'guest_home' %}">⬅ {% trans "Home" %}</a>
+</div>
+
+<div id="map"></div>
+
+<script>
+function initMap() {
+
+    const center = { lat: 41.694, lng: -8.830 };
+
+    const map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            zoom: 14,
+            center: center,
+            mapTypeId: "roadmap"
+        }
+    );
+
+    {% for place in places %}
+    new google.maps.Marker({
+        position: {
+            lat: parseFloat("{{ place.latitude|floatformat:6 }}"),
+            lng: parseFloat("{{ place.longitude|floatformat:6 }}")
+        },
+        map: map,
+        title: "{{ place.name|escapejs }}"
+    });
+    {% endfor %}
+}
+</script>
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap">
+</script>
+
+</body>
+</html>

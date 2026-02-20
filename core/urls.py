@@ -7,4 +7,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('i18n/setlang/', set_language, name='set_language'),
     path('', include('accounts.urls')),
+    path("", include("places.urls")),
+
 ]
