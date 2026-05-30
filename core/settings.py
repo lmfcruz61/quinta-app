@@ -140,6 +140,9 @@ LOCALE_PATHS = [
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (41.694, -8.830),  # coordenadas da tua Quinta

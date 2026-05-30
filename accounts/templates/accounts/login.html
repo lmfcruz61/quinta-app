@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
-    <title>Quinta da Ponte</title>
+    <title>{% trans "Quinta da Ponte" %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -76,13 +77,43 @@
             font-size: 12px;
             color: #aaa;
         }
+
+        .lang-select {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+
+        .lang-select select {
+            background: #f5f7f6;
+            color: #2f5d50;
+            border: 1px solid #d7dfdc;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>Quinta da Ponte</h2>
-        <p>Introduza o seu código de acesso</p>
+        <form class="lang-select" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            <select name="language" onchange="this.form.submit()">
+                {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}"
+                        {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <h2>{% trans "Quinta da Ponte" %}</h2>
+        <p>{% trans "Introduza o seu código de acesso" %}</p>
 
         {% if error %}
             <div class="error">{{ error }}</div>
@@ -90,12 +121,12 @@
 
         <form method="post">
             {% csrf_token %}
-            <input type="text" name="code" placeholder="Código de acesso" required>
-            <button type="submit">Entrar</button>
+            <input type="text" name="code" placeholder="{% trans 'Código de acesso' %}" required>
+            <button type="submit">{% trans "Entrar" %}</button>
         </form>
 
         <div class="footer">
-            Alojamento Local
+            {% trans "Alojamento Local" %}
         </div>
     </div>
 

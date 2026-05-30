@@ -20,6 +20,23 @@
             padding: 25px 20px;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
+            position: relative;
+        }
+
+        .lang-select {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+        }
+
+        .lang-select select {
+            background: white;
+            color: #1e3c72;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .container {
@@ -68,6 +85,21 @@
 
     <!-- HEADER -->
     <div class="header">
+        <form class="lang-select" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            <select name="language" onchange="this.form.submit()">
+                {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}"
+                        {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
         <a href="/home/" style="
             color: white;
             text-decoration: none;

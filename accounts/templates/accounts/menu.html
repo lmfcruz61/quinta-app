@@ -1,0 +1,451 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Ementa" %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f6fb;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2a6fd6);
+            color: white;
+            padding: 25px 20px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            position: relative;
+        }
+
+        .lang-select {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+        }
+
+        .lang-select select {
+            background: white;
+            color: #1e3c72;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .header h2 {
+            margin: 8px 0 4px;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 20px;
+            padding-bottom: 110px;
+        }
+
+        .message {
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .success {
+            background: #e8f6ef;
+            color: #226944;
+        }
+
+        .error {
+            background: #fdecea;
+            color: #b42318;
+        }
+
+        .category {
+            margin-bottom: 24px;
+        }
+
+        .category h3 {
+            color: #1e3c72;
+            font-size: 16px;
+            margin: 0 0 10px;
+        }
+
+        .item {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-photo {
+            display: block;
+            width: 96px;
+            height: 72px;
+            object-fit: cover;
+            background: #dce4ee;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .item-photo:focus {
+            outline: 3px solid rgba(42,111,214,0.35);
+            outline-offset: 2px;
+        }
+
+        .photo-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(12, 28, 48, 0.82);
+        }
+
+        .photo-modal.is-open {
+            display: flex;
+        }
+
+        .photo-modal img {
+            max-width: min(100%, 900px);
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+            background: white;
+        }
+
+        .photo-modal button {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            color: #1e3c72;
+            font-size: 26px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .item-head {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .item-name {
+            color: #1e3c72;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .price {
+            color: #2f5d50;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .description {
+            margin: 8px 0 12px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 1px solid #edf1f5;
+            padding-top: 12px;
+            color: #1e3c72;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .quantity input {
+            width: 72px;
+            padding: 9px;
+            border: 1px solid #cfd8e3;
+            border-radius: 10px;
+            color: #1e3c72;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .notes {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .notes label {
+            display: block;
+            color: #1e3c72;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .notes textarea {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #cfd8e3;
+            border-radius: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            color: #666;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .submit-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(242,246,251,0.96);
+            border-top: 1px solid #dce4ee;
+            padding: 14px 20px;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1e3c72;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .order-total strong {
+            color: #2f5d50;
+            font-size: 18px;
+        }
+
+        .submit-bar button {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            background: #2f5d50;
+            color: white;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <form class="lang-select" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            <select name="language" onchange="this.form.submit()">
+                {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}"
+                        {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <a class="back-link" href="{% url 'guest_home' %}">← {% trans "Início" %}</a>
+        <h2>{% trans "Ementa" %}</h2>
+        <p>{% trans "Almoço/Jantar, etc.." %}</p>
+    </div>
+
+    <div class="container">
+        {% if success %}
+            <div class="message success">
+                {% trans "A sua encomenda foi enviada." %}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="message error">{{ error }}</div>
+        {% endif %}
+
+        {% if categories %}
+            <form method="post">
+                {% csrf_token %}
+
+                {% for category in categories %}
+                    <section class="category">
+                        <h3>{{ category.label }}</h3>
+
+                        {% for item in category.items %}
+                            <article class="item">
+                                {% if item.photo %}
+                                    <img
+                                        class="item-photo"
+                                        src="{{ item.photo.url }}"
+                                        alt="{{ item.name }}"
+                                        data-full-image="{{ item.photo.url }}"
+                                        tabindex="0"
+                                    >
+                                {% endif %}
+
+                                <div class="item-head">
+                                    <div class="item-name">{{ item.name }}</div>
+                                    {% if item.price %}
+                                        <div class="price">{{ item.price }} €</div>
+                                    {% endif %}
+                                </div>
+
+                                {% if item.description %}
+                                    <p class="description">{{ item.description }}</p>
+                                {% endif %}
+
+                                <label class="quantity">
+                                    <span>{% trans "Quantidade" %}</span>
+                                    <input
+                                        type="number"
+                                        name="quantity_{{ item.id }}"
+                                        min="0"
+                                        max="20"
+                                        value="0"
+                                        data-price="{{ item.price|default:'0' }}"
+                                    >
+                                </label>
+                            </article>
+                        {% endfor %}
+                    </section>
+                {% endfor %}
+
+                <div class="notes">
+                    <label for="notes">{% trans "Observações" %}</label>
+                    <textarea id="notes" name="notes" placeholder="{% trans 'Ex: sem cebola, entregar às 20:00' %}"></textarea>
+                </div>
+
+                <div class="submit-bar">
+                    <div class="order-total">
+                        <span>{% trans "Total a pagar" %}</span>
+                        <strong><span id="order-total">0.00</span> €</strong>
+                    </div>
+                    <button type="submit">{% trans "Enviar encomenda" %}</button>
+                </div>
+            </form>
+        {% else %}
+            <div class="empty">
+                {% trans "A ementa ainda não está disponível." %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="photo-modal" id="photo-modal" aria-hidden="true">
+        <button type="button" id="photo-modal-close" aria-label="{% trans 'Fechar imagem' %}">&times;</button>
+        <img id="photo-modal-image" src="" alt="">
+    </div>
+
+    <script>
+        const quantityInputs = document.querySelectorAll('input[type="number"][data-price]');
+        const totalElement = document.getElementById('order-total');
+        const photoModal = document.getElementById('photo-modal');
+        const photoModalImage = document.getElementById('photo-modal-image');
+        const photoModalClose = document.getElementById('photo-modal-close');
+
+        function updateTotal() {
+            let total = 0;
+
+            quantityInputs.forEach((input) => {
+                const quantity = Number.parseInt(input.value, 10) || 0;
+                const price = Number.parseFloat(input.dataset.price.replace(',', '.')) || 0;
+                total += quantity * price;
+            });
+
+            totalElement.textContent = total.toFixed(2);
+        }
+
+        quantityInputs.forEach((input) => {
+            input.addEventListener('input', updateTotal);
+            input.addEventListener('change', updateTotal);
+        });
+
+        updateTotal();
+
+        function openPhotoModal(photo) {
+            photoModalImage.src = photo.dataset.fullImage;
+            photoModalImage.alt = photo.alt;
+            photoModal.classList.add('is-open');
+            photoModal.setAttribute('aria-hidden', 'false');
+            photoModalClose.focus();
+        }
+
+        function closePhotoModal() {
+            photoModal.classList.remove('is-open');
+            photoModal.setAttribute('aria-hidden', 'true');
+            photoModalImage.src = '';
+            photoModalImage.alt = '';
+        }
+
+        document.querySelectorAll('.item-photo').forEach((photo) => {
+            photo.addEventListener('click', () => openPhotoModal(photo));
+            photo.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openPhotoModal(photo);
+                }
+            });
+        });
+
+        photoModalClose.addEventListener('click', closePhotoModal);
+        photoModal.addEventListener('click', (event) => {
+            if (event.target === photoModal) {
+                closePhotoModal();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && photoModal.classList.contains('is-open')) {
+                closePhotoModal();
+            }
+        });
+    </script>
+
+</body>
+</html>

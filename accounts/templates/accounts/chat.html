@@ -1,0 +1,185 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Falar connosco" %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f6fb;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2a6fd6);
+            color: white;
+            padding: 25px 20px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .header h2 {
+            margin: 8px 0 4px;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 20px;
+            padding-bottom: 135px;
+        }
+
+        .empty,
+        .error {
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .empty {
+            background: white;
+            color: #666;
+        }
+
+        .error {
+            background: #fdecea;
+            color: #b42318;
+        }
+
+        .message {
+            max-width: 82%;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .message.guest {
+            margin-left: auto;
+            align-items: flex-end;
+        }
+
+        .message.staff {
+            margin-right: auto;
+            align-items: flex-start;
+        }
+
+        .bubble {
+            border-radius: 14px;
+            padding: 11px 13px;
+            font-size: 15px;
+            line-height: 1.35;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            white-space: pre-wrap;
+        }
+
+        .guest .bubble {
+            background: #2f5d50;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .staff .bubble {
+            background: white;
+            color: #1e3c72;
+            border-bottom-left-radius: 4px;
+        }
+
+        .meta {
+            color: #667085;
+            font-size: 11px;
+        }
+
+        .composer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(242,246,251,0.96);
+            border-top: 1px solid #dce4ee;
+            padding: 14px 20px;
+        }
+
+        .composer textarea {
+            width: 100%;
+            min-height: 58px;
+            max-height: 130px;
+            border: 1px solid #cfd8e3;
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            resize: vertical;
+        }
+
+        .composer button {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            background: #2f5d50;
+            color: white;
+            padding: 13px;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a class="back-link" href="{% url 'guest_home' %}">← {% trans "Início" %}</a>
+        <h2>{% trans "Falar connosco" %}</h2>
+        <p>{% trans "Envie a sua mensagem à equipa." %}</p>
+    </div>
+
+    <div class="container">
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.sender }}">
+                    <div class="bubble">{{ message.message }}</div>
+                    <div class="meta">
+                        {{ message.get_sender_display }} · {{ message.created_at|date:"d/m H:i" }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                {% trans "Ainda não existem mensagens." %}
+            </div>
+        {% endif %}
+    </div>
+
+    <form class="composer" method="post">
+        {% csrf_token %}
+        <textarea name="message" placeholder="{% trans 'Escreva a sua mensagem...' %}" required></textarea>
+        <button type="submit">{% trans "Enviar" %}</button>
+    </form>
+
+</body>
+</html>

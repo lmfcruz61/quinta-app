@@ -6,4 +6,4 @@ class Room(models.Model):
     name = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return self.number
+        return self.name or self.number
