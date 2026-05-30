@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
@@ -15,6 +16,12 @@ class Place(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
     description = models.TextField(blank=True)
+    thumbnail = models.FileField(
+        "thumbnail",
+        upload_to="places/",
+        blank=True,
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
+    )
 
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -32,6 +39,8 @@ class Place(models.Model):
 
     class Meta:
         ordering = ["order", "name"]
+        verbose_name = "local"
+        verbose_name_plural = "Locais"
 
     def __str__(self):
         return self.name

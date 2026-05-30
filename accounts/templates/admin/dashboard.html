@@ -1,0 +1,56 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard-notifications {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin: 0 0 20px;
+    }
+
+    .dashboard-notification {
+        display: block;
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--darkened-bg);
+        border: 1px solid var(--border-color);
+        text-decoration: none;
+    }
+
+    .dashboard-notification strong {
+        display: block;
+        color: var(--body-fg);
+        font-size: 28px;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .dashboard-notification span {
+        color: var(--body-quiet-color);
+        font-size: 13px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if admin_notifications %}
+    <div class="dashboard-notifications">
+        <a class="dashboard-notification" href="{{ admin_notifications.chat_url }}">
+            <strong>{{ admin_notifications.unread_messages }}</strong>
+            <span>{% trans "mensagens por ler" %}</span>
+        </a>
+        <a class="dashboard-notification" href="{{ admin_notifications.orders_url }}">
+            <strong>{{ admin_notifications.new_orders }}</strong>
+            <span>{% trans "encomendas novas" %}</span>
+        </a>
+        <a class="dashboard-notification" href="{{ admin_notifications.breakfast_url }}">
+            <strong>{{ admin_notifications.breakfast_today }}</strong>
+            <span>{% trans "pequenos-almoços hoje" %}</span>
+        </a>
+    </div>
+{% endif %}
+{{ block.super }}
+{% endblock %}

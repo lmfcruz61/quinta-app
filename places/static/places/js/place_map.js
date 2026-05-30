@@ -20,17 +20,22 @@ function initAdminMap() {
     if (mapDiv.dataset.loaded) return;
     mapDiv.dataset.loaded = "true";
 
-    let lat = parseFloat(latField.value);
-    let lng = parseFloat(lngField.value);
+    const parseCoordinate = (value) => {
+      if (!value) return NaN;
+      return parseFloat(String(value).trim().replace(",", "."));
+    };
 
-    if (isNaN(lat)) lat = 41.694;
-    if (isNaN(lng)) lng = -8.830;
+    let lat = parseCoordinate(latField.value);
+    let lng = parseCoordinate(lngField.value);
+
+    if (isNaN(lat)) lat = 41.705098;
+    if (isNaN(lng)) lng = -8.791817;
 
     const location = { lat, lng };
 
     const map = new google.maps.Map(mapDiv, {
       center: location,
-      zoom: latField.value ? 16 : 13,
+      zoom: latField.value ? 15 : 14,
       mapTypeId: "roadmap",
 
       // ⭐ FORÇAR RASTER → evita UNINITIALIZED ⭐
@@ -43,6 +48,7 @@ function initAdminMap() {
       position: location,
       map: map,
       draggable: true,
+      title: "Local selecionado",
     });
 
     marker.addListener("dragend", (event) => {

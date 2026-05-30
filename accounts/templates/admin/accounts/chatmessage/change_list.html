@@ -1,0 +1,15 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+    window.setInterval(() => {
+        const hasOpenPopup = document.querySelector('.popup, .related-widget-wrapper-link:focus');
+
+        if (!hasOpenPopup) {
+            window.location.reload();
+        }
+    }, 10000);
+</script>
+{% endblock %}

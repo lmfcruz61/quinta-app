@@ -177,9 +177,21 @@
 
     <form class="composer" method="post">
         {% csrf_token %}
-        <textarea name="message" placeholder="{% trans 'Escreva a sua mensagem...' %}" required></textarea>
+        <textarea id="chat-message" name="message" placeholder="{% trans 'Escreva a sua mensagem...' %}" required></textarea>
         <button type="submit">{% trans "Enviar" %}</button>
     </form>
+
+    <script>
+        const messageInput = document.getElementById('chat-message');
+
+        window.setInterval(() => {
+            const isWriting = document.activeElement === messageInput || messageInput.value.trim() !== '';
+
+            if (!isWriting) {
+                window.location.reload();
+            }
+        }, 10000);
+    </script>
 
 </body>
 </html>

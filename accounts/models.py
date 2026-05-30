@@ -52,6 +52,7 @@ class ChatMessage(models.Model):
     guest = models.ForeignKey(Guest, related_name="chat_messages", on_delete=models.CASCADE)
     sender = models.CharField("remetente", max_length=10, choices=SENDER_CHOICES)
     message = models.TextField("mensagem")
+    is_read = models.BooleanField("lida", default=False)
     created_at = models.DateTimeField("criada em", auto_now_add=True)
 
     class Meta:

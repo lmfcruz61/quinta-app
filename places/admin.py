@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from .models import Place
@@ -7,16 +8,16 @@ from .models import Place
 @admin.register(Place)
 class PlaceAdmin(admin.ModelAdmin):
 
-    list_display = ("name", "category", "is_active", "order")
+    list_display = ("name", "category", "thumbnail_preview", "is_active", "order")
     list_filter = ("category", "is_active")
     search_fields = ("name", "description")
     ordering = ("order", "name")
 
-    readonly_fields = ("map_picker",)   # ⭐ CRÍTICO
+    readonly_fields = ("thumbnail_preview", "map_picker")
 
     fieldsets = (
         (None, {
-            "fields": ("name", "category", "description", "icon", "is_active", "order")
+            "fields": ("name", "category", "description", "thumbnail", "thumbnail_preview", "icon", "is_active", "order")
         }),
         ("Localização", {
             "fields": ("latitude", "longitude", "map_picker")
@@ -44,6 +45,17 @@ class PlaceAdmin(admin.ModelAdmin):
         """)
 
     map_picker.short_description = ""
+
+    def thumbnail_preview(self, obj):
+        if not obj or not obj.thumbnail:
+            return ""
+        return format_html(
+            '<img src="{}" alt="{}" style="height: 52px; width: 72px; object-fit: cover; border-radius: 6px;">',
+            obj.thumbnail.url,
+            obj.name,
+        )
+
+    thumbnail_preview.short_description = "thumbnail"
 
     class Media:
        js = (
