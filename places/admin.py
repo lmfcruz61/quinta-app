@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.conf import settings
 from .models import Place
 
 
@@ -39,7 +38,7 @@ class PlaceAdmin(admin.ModelAdmin):
               </div>
 
               <div style="margin-top:6px; color:#888; font-size:12px;">
-                Clique no mapa para preencher Latitude/Longitude automaticamente.
+                Clique no mapa ou arraste o marcador para preencher Latitude/Longitude automaticamente.
               </div>
             </div>
         """)
@@ -58,7 +57,10 @@ class PlaceAdmin(admin.ModelAdmin):
     thumbnail_preview.short_description = "thumbnail"
 
     class Media:
-       js = (
-        "https://maps.googleapis.com/maps/api/js?key=" + settings.GOOGLE_MAPS_API_KEY,
-        "places/js/place_map.js",
-    )
+        css = {
+            "all": ("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",)
+        }
+        js = (
+            "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+            "places/js/place_map.js",
+        )
