@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <title>{% trans "Map" %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
 
     <style>
         body {
@@ -30,9 +34,6 @@
         }
 
         .place-label {
-            position: absolute;
-            transform: translate(-50%, -100%);
-            margin-top: -36px;
             padding: 5px 8px;
             border-radius: 8px;
             background: white;
@@ -53,6 +54,15 @@
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
             border-top: 5px solid white;
+        }
+
+        .leaflet-tooltip-top.place-label {
+            margin-top: -12px;
+            border: none;
+        }
+
+        .leaflet-tooltip-top.place-label::before {
+            display: none;
         }
 
         .place-popup {
@@ -92,53 +102,17 @@
 
 {{ places_data|json_script:"places-data" }}
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 function initMap() {
+    const center = [41.705098, -8.791817];
 
-    const center = { lat: 41.705098, lng: -8.791817 };
+    const map = L.map("map").setView(center, 14);
 
-    const map = new google.maps.Map(
-        document.getElementById("map"),
-        {
-            zoom: 14,
-            center: center,
-            mapTypeId: "roadmap"
-        }
-    );
-
-    const infoWindow = new google.maps.InfoWindow();
-    const bounds = new google.maps.LatLngBounds();
-    let placeCount = 0;
-
-    class PlaceLabel extends google.maps.OverlayView {
-        constructor(position, text) {
-            super();
-            this.position = position;
-            this.text = text;
-            this.div = null;
-        }
-
-        onAdd() {
-            this.div = document.createElement("div");
-            this.div.className = "place-label";
-            this.div.textContent = this.text;
-            this.getPanes().overlayMouseTarget.appendChild(this.div);
-        }
-
-        draw() {
-            const point = this.getProjection().fromLatLngToDivPixel(this.position);
-            if (!point || !this.div) return;
-            this.div.style.left = `${point.x}px`;
-            this.div.style.top = `${point.y}px`;
-        }
-
-        onRemove() {
-            if (this.div) {
-                this.div.remove();
-                this.div = null;
-            }
-        }
-    }
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
 
     function escapeHtml(value) {
         const div = document.createElement("div");
@@ -147,61 +121,47 @@ function initMap() {
     }
 
     const places = JSON.parse(document.getElementById("places-data").textContent);
+    const bounds = [];
 
     places.forEach((place) => {
-        const position = {
-            lat: place.latitude,
-            lng: place.longitude
-        };
-        const marker = new google.maps.Marker({
-            position: position,
-            map: map,
-            title: place.name
-        });
-        bounds.extend(position);
-        placeCount += 1;
+        const position = [place.latitude, place.longitude];
+        const thumbnail = place.thumbnail_url
+            ? `<img src="${escapeHtml(place.thumbnail_url)}" alt="${escapeHtml(place.name)}">`
+            : "";
+        const description = place.description
+            ? `<p>${escapeHtml(place.description).replace(/\n/g, "<br>")}</p>`
+            : "";
 
-        const label = new PlaceLabel(
-            new google.maps.LatLng(position.lat, position.lng),
-            place.name
-        );
-        label.setMap(map);
-
-        marker.addListener("click", () => {
-            const thumbnail = place.thumbnail_url
-                ? `<img src="${escapeHtml(place.thumbnail_url)}" alt="${escapeHtml(place.name)}">`
-                : "";
-            const description = place.description
-                ? `<p>${escapeHtml(place.description).replace(/\n/g, "<br>")}</p>`
-                : "";
-
-            infoWindow.setContent(`
+        L.marker(position)
+            .addTo(map)
+            .bindTooltip(escapeHtml(place.name), {
+                permanent: true,
+                direction: "top",
+                offset: [0, -12],
+                className: "place-label",
+            })
+            .bindPopup(`
                 <div class="place-popup">
                     ${thumbnail}
                     <h3>${escapeHtml(place.name)}</h3>
                     ${description}
                 </div>
             `);
-            infoWindow.open(map, marker);
-        });
+
+        bounds.push(position);
     });
 
-    if (placeCount === 1) {
-        map.setCenter(bounds.getCenter());
-        map.setZoom(15);
-    } else if (placeCount > 1) {
-        map.fitBounds(bounds, 70);
-        google.maps.event.addListenerOnce(map, "bounds_changed", () => {
-            if (map.getZoom() > 15) {
-                map.setZoom(15);
-            }
+    if (bounds.length === 1) {
+        map.setView(bounds[0], 15);
+    } else if (bounds.length > 1) {
+        map.fitBounds(bounds, {
+            padding: [70, 70],
+            maxZoom: 15,
         });
     }
 }
-</script>
 
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap">
+initMap();
 </script>
 
 </body>
