@@ -81,6 +81,15 @@ msgstr "Ungültiger Code oder außerhalb des Aufenthaltszeitraums"
 msgid "Ementa"
 msgstr "Speisekarte"
 
+msgid "Comer"
+msgstr "Essen"
+
+msgid "Sobremesas"
+msgstr "Desserts"
+
+msgid "Bebidas"
+msgstr "Getränke"
+
 msgid "A ementa ainda não está disponível."
 msgstr "Die Speisekarte ist noch nicht verfügbar."
 

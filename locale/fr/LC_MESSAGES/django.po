@@ -81,6 +81,15 @@ msgstr "Code invalide ou hors période de séjour"
 msgid "Ementa"
 msgstr "Menu"
 
+msgid "Comer"
+msgstr "Repas"
+
+msgid "Sobremesas"
+msgstr "Desserts"
+
+msgid "Bebidas"
+msgstr "Boissons"
+
 msgid "A ementa ainda não está disponível."
 msgstr "Le menu n'est pas encore disponible."
 

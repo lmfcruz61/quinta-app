@@ -81,6 +81,15 @@ msgstr "Invalid code or outside the stay period"
 msgid "Ementa"
 msgstr "Menu"
 
+msgid "Comer"
+msgstr "Food"
+
+msgid "Sobremesas"
+msgstr "Desserts"
+
+msgid "Bebidas"
+msgstr "Drinks"
+
 msgid "A ementa ainda não está disponível."
 msgstr "The menu is not available yet."
 

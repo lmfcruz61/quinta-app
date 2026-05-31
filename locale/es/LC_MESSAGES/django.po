@@ -81,6 +81,15 @@ msgstr "Código inválido o fuera del periodo de estancia"
 msgid "Ementa"
 msgstr "Menú"
 
+msgid "Comer"
+msgstr "Comida"
+
+msgid "Sobremesas"
+msgstr "Postres"
+
+msgid "Bebidas"
+msgstr "Bebidas"
+
 msgid "A ementa ainda não está disponível."
 msgstr "El menú aún no está disponible."
 
