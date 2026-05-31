@@ -175,18 +175,31 @@ def menu(request):
         else:
             error = _("Selecione pelo menos um prato.")
 
-    categories = []
-    for value, label in MenuItem.CATEGORY_CHOICES:
-        category_items = [item for item in items if item.category == value]
-        if category_items:
-            categories.append({"label": _(label), "items": category_items})
+    menu_tabs = [
+        {
+            "id": "food",
+            "label": _("Comer"),
+            "items": [item for item in items if item.category in ("starter", "main", "other")],
+        },
+        {
+            "id": "desserts",
+            "label": _("Sobremesas"),
+            "items": [item for item in items if item.category == "dessert"],
+        },
+        {
+            "id": "drinks",
+            "label": _("Bebidas"),
+            "items": [item for item in items if item.category == "drink"],
+        },
+    ]
+    menu_tabs = [tab for tab in menu_tabs if tab["items"]]
 
     return render(
         request,
         "accounts/menu.html",
         {
             "guest": guest,
-            "categories": categories,
+            "menu_tabs": menu_tabs,
             "success": success,
             "error": error,
         }

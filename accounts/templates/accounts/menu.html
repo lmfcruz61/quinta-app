@@ -82,6 +82,41 @@
             color: #b42318;
         }
 
+        .menu-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .menu-tab-button {
+            flex: 1 0 auto;
+            border: 1px solid #cfd8e3;
+            border-radius: 12px;
+            background: white;
+            color: #1e3c72;
+            padding: 11px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 9px rgba(0,0,0,0.06);
+        }
+
+        .menu-tab-button.is-active {
+            background: #1e3c72;
+            border-color: #1e3c72;
+            color: white;
+        }
+
+        .menu-tab-panel {
+            display: none;
+        }
+
+        .menu-tab-panel.is-active {
+            display: block;
+        }
+
         .category {
             margin-bottom: 24px;
         }
@@ -311,15 +346,32 @@
             <div class="message error">{{ error }}</div>
         {% endif %}
 
-        {% if categories %}
+        {% if menu_tabs %}
             <form method="post">
                 {% csrf_token %}
 
-                {% for category in categories %}
-                    <section class="category">
-                        <h3>{{ category.label }}</h3>
+                <div class="menu-tabs" role="tablist" aria-label="{% trans 'Categorias da ementa' %}">
+                    {% for tab in menu_tabs %}
+                        <button
+                            class="menu-tab-button {% if forloop.first %}is-active{% endif %}"
+                            type="button"
+                            role="tab"
+                            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                            aria-controls="menu-tab-{{ tab.id }}"
+                            data-menu-tab="{{ tab.id }}"
+                        >
+                            {{ tab.label }}
+                        </button>
+                    {% endfor %}
+                </div>
 
-                        {% for item in category.items %}
+                {% for tab in menu_tabs %}
+                    <section
+                        class="menu-tab-panel {% if forloop.first %}is-active{% endif %}"
+                        id="menu-tab-{{ tab.id }}"
+                        role="tabpanel"
+                    >
+                        {% for item in tab.items %}
                             <article class="item">
                                 {% if item.photo %}
                                     <img
@@ -389,6 +441,8 @@
         const photoModal = document.getElementById('photo-modal');
         const photoModalImage = document.getElementById('photo-modal-image');
         const photoModalClose = document.getElementById('photo-modal-close');
+        const tabButtons = document.querySelectorAll('[data-menu-tab]');
+        const tabPanels = document.querySelectorAll('.menu-tab-panel');
 
         function updateTotal() {
             let total = 0;
@@ -408,6 +462,22 @@
         });
 
         updateTotal();
+
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const activeTab = button.dataset.menuTab;
+
+                tabButtons.forEach((tabButton) => {
+                    const isActive = tabButton === button;
+                    tabButton.classList.toggle('is-active', isActive);
+                    tabButton.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+
+                tabPanels.forEach((panel) => {
+                    panel.classList.toggle('is-active', panel.id === `menu-tab-${activeTab}`);
+                });
+            });
+        });
 
         function openPhotoModal(photo) {
             photoModalImage.src = photo.dataset.fullImage;
