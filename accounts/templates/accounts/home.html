@@ -45,6 +45,12 @@
             font-size: 22px;
         }
 
+        .brand {
+            font-size: 13px;
+            font-weight: bold;
+            opacity: 0.92;
+        }
+
         .header p {
             margin: 6px 0 0;
             font-size: 14px;
@@ -107,6 +113,8 @@
                 {% endfor %}
             </select>
         </form>
+
+        <div class="brand">{% trans "Quinta da Ponte" %}</div>
 
         <h2>
             {% blocktrans with name=guest_name|default:_("Hóspede") %}

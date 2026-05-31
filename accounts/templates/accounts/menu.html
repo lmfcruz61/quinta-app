@@ -47,6 +47,13 @@
             margin-bottom: 6px;
         }
 
+        .brand {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            opacity: 0.92;
+        }
+
         .header h2 {
             margin: 8px 0 4px;
             font-size: 24px;
@@ -329,6 +336,8 @@
                 {% endfor %}
             </select>
         </form>
+
+        <div class="brand">{% trans "Quinta da Ponte" %}</div>
 
         <a class="back-link" href="{% url 'guest_home' %}">← {% trans "Início" %}</a>
         <h2>{% trans "Ementa" %}</h2>

@@ -28,6 +28,13 @@
             font-size: 14px;
         }
 
+        .brand {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            opacity: 0.92;
+        }
+
         #map {
             height: calc(100vh - 70px);
             width: 100%;
@@ -95,6 +102,7 @@
 <body>
 
 <div class="header">
+    <div class="brand">{% trans "Quinta da Ponte" %}</div>
     <a href="{% url 'guest_home' %}">⬅ {% trans "Home" %}</a>
 </div>
 
