@@ -175,11 +175,21 @@ def menu(request):
         else:
             error = _("Selecione pelo menos um prato.")
 
+    food_category_order = {
+        "starter": 0,
+        "main": 1,
+        "other": 2,
+    }
+    food_items = sorted(
+        [item for item in items if item.category in food_category_order],
+        key=lambda item: (food_category_order[item.category], item.order, item.name),
+    )
+
     menu_tabs = [
         {
             "id": "food",
             "label": _("Comer"),
-            "items": [item for item in items if item.category in ("starter", "main", "other")],
+            "items": food_items,
         },
         {
             "id": "desserts",
