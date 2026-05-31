@@ -1,4 +1,7 @@
+import uuid
+
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -30,7 +33,7 @@ admin.site.each_context = admin_each_context
 @admin.register(Guest)
 class GuestAdmin(admin.ModelAdmin):
     list_display = (
-        "user",
+        "name",
         "room",
         "access_code",
         "check_in",
@@ -39,9 +42,34 @@ class GuestAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ("access_code",)
+    fields = (
+        "name",
+        "email",
+        "phone",
+        "address",
+        "room",
+        "check_in",
+        "check_out",
+        "access_code",
+        "is_active",
+    )
 
     list_filter = ("room", "is_active")
-    search_fields = ("user__username", "access_code")
+    search_fields = ("name", "email", "phone", "address", "user__username", "access_code")
+
+    def save_model(self, request, obj, form, change):
+        if not obj.user_id:
+            obj.user = User.objects.create_user(
+                username=f"guest_{uuid.uuid4().hex[:8]}",
+                email=obj.email,
+                first_name=obj.name,
+            )
+        else:
+            obj.user.email = obj.email
+            obj.user.first_name = obj.name
+            obj.user.save(update_fields=("email", "first_name"))
+
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(BreakfastRequest)
@@ -118,7 +146,7 @@ class MenuOrderItemInline(admin.TabularInline):
     def line_total(self, obj):
         if not obj.pk:
             return ""
-        return obj.total
+        return f"{obj.total:.2f} €"
 
     line_total.short_description = "total"
 
@@ -135,11 +163,18 @@ class MenuOrderAdmin(admin.ModelAdmin):
         "guest__user__last_name",
         "guest__access_code",
     )
-    readonly_fields = ("guest", "notes", "created_at", "total_display")
+    fields = ("guest_display", "status", "notes", "created_at", "total_display")
+    readonly_fields = ("guest_display", "notes", "created_at", "total_display")
     inlines = (MenuOrderItemInline,)
     ordering = ("-created_at",)
 
+    def guest_display(self, obj):
+        guest_name = obj.guest.name or obj.guest.user.get_full_name() or obj.guest.user.username
+        return format_html("<strong>{}</strong>", guest_name)
+
+    guest_display.short_description = "Guest"
+
     def total_display(self, obj):
-        return obj.total
+        return f"{obj.total:.2f} €"
 
     total_display.short_description = "total"

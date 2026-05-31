@@ -1,10 +1,10 @@
 venv/
 __pycache__/
 *.pyc
+.git/
 db.sqlite3
-.env
-*.log
-locale/*/LC_MESSAGES/*.mo
 media/
 imagens/
+.env
+*.log
 staticfiles/

@@ -1,0 +1,23 @@
+app = "quinta-app"
+primary_region = "cdg"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DEBUG = "False"
+  SQLITE_PATH = "/data/db.sqlite3"
+  MEDIA_ROOT = "/data/media"
+  SERVE_MEDIA = "True"
+
+[[mounts]]
+  source = "quinta_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

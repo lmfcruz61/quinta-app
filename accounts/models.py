@@ -13,6 +13,11 @@ class Guest(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
 
+    name = models.CharField("nome", max_length=200, default="")
+    email = models.EmailField("email", blank=True)
+    phone = models.CharField("telefone", max_length=30, blank=True)
+    address = models.TextField("morada", blank=True)
+
     check_in = models.DateField()
     check_out = models.DateField()
 
@@ -29,7 +34,7 @@ class Guest(models.Model):
         return self.is_active and self.check_in <= today <= self.check_out
 
     def __str__(self):
-        return f"{self.user.username} - {self.room}"
+        return f"{self.name or self.user.username} - {self.room}"
 
 
 class BreakfastRequest(models.Model):

@@ -42,7 +42,7 @@ def guest_home(request):
         return redirect("guest_login")
 
     guest = Guest.objects.get(id=guest_id)
-    guest_name = guest.user.get_full_name() or guest.user.username
+    guest_name = guest.name or guest.user.get_full_name() or guest.user.username
     room_name = guest.room.name if guest.room and guest.room.name else guest.room
 
     return render(

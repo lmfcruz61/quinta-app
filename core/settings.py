@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 import mimetypes
 mimetypes.add_type("application/javascript", ".js", True)
 mimetypes.add_type("text/css", ".css", True)
@@ -25,12 +26,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-877nq5=s*p!y447r^b%yaoyg$!fu#1oreje8qu-l-esm&c=9q3'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    'django-insecure-877nq5=s*p!y447r^b%yaoyg$!fu#1oreje8qu-l-esm&c=9q3',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True").lower() in ("1", "true", "yes", "on")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
+
+if DEBUG:
+    ALLOWED_HOSTS += ["127.0.0.1", "localhost"]
+
+fly_app_name = os.environ.get("FLY_APP_NAME")
+if fly_app_name:
+    ALLOWED_HOSTS.append(f"{fly_app_name}.fly.dev")
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+if fly_app_name:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{fly_app_name}.fly.dev")
 
 
 # Application definition
@@ -50,6 +74,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -90,7 +115,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.environ.get("SQLITE_PATH", BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -139,13 +164,31 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", BASE_DIR / 'media'))
+SERVE_MEDIA = os.environ.get("SERVE_MEDIA", "False").lower() in ("1", "true", "yes", "on")
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (41.694, -8.830),  # coordenadas da tua Quinta
     'DEFAULT_ZOOM': 14,
 }
-GOOGLE_MAPS_API_KEY = "AIzaSyB50sPw6TzffZ6ktSASw5lXkpIfR-GlUC8"
+GOOGLE_MAPS_API_KEY = os.environ.get(
+    "GOOGLE_MAPS_API_KEY",
+    "AIzaSyB50sPw6TzffZ6ktSASw5lXkpIfR-GlUC8",
+)
