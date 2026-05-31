@@ -128,3 +128,15 @@ msgstr "Enviar pedido"
 
 msgid "Total a pagar"
 msgstr "Total a pagar"
+
+msgid "A minha localização"
+msgstr "Mi ubicación"
+
+msgid "A localizar..."
+msgstr "Localizando..."
+
+msgid "Localização indisponível"
+msgstr "Ubicación no disponible"
+
+msgid "Está aqui"
+msgstr "Está aquí"

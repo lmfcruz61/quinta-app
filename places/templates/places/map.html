@@ -48,6 +48,37 @@
             width: 100%;
         }
 
+        .locate-button {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: 18px;
+            z-index: 1000;
+            min-height: 48px;
+            border: none;
+            border-radius: 12px;
+            background: #1e3c72;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+            cursor: pointer;
+        }
+
+        .locate-button:disabled {
+            opacity: 0.78;
+            cursor: wait;
+        }
+
+        .guest-location-dot {
+            width: 16px;
+            height: 16px;
+            border: 3px solid white;
+            border-radius: 50%;
+            background: #2a6fd6;
+            box-shadow: 0 0 0 5px rgba(42,111,214,0.25);
+        }
+
         .place-label {
             padding: 5px 8px;
             border-radius: 8px;
@@ -115,6 +146,9 @@
 </div>
 
 <div id="map"></div>
+<button class="locate-button" id="locate-button" type="button">
+    📍 {% trans "A minha localização" %}
+</button>
 
 {{ places_data|json_script:"places-data" }}
 
@@ -124,6 +158,9 @@ function initMap() {
     const center = [41.705098, -8.791817];
 
     const map = L.map("map").setView(center, 14);
+    const locateButton = document.getElementById("locate-button");
+    let guestMarker = null;
+    let guestAccuracy = null;
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         maxZoom: 19,
@@ -136,6 +173,68 @@ function initMap() {
         div.textContent = value || "";
         return div.innerHTML;
     }
+
+    function setLocateButton(text, disabled) {
+        locateButton.textContent = text;
+        locateButton.disabled = disabled;
+    }
+
+    locateButton.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            setLocateButton("{% trans 'Localização indisponível' %}", false);
+            return;
+        }
+
+        setLocateButton("{% trans 'A localizar...' %}", true);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const guestPosition = [
+                    position.coords.latitude,
+                    position.coords.longitude,
+                ];
+                const accuracy = position.coords.accuracy || 0;
+
+                if (!guestMarker) {
+                    guestMarker = L.marker(guestPosition, {
+                        icon: L.divIcon({
+                            className: "",
+                            html: '<div class="guest-location-dot"></div>',
+                            iconSize: [22, 22],
+                            iconAnchor: [11, 11],
+                        }),
+                    }).addTo(map);
+                } else {
+                    guestMarker.setLatLng(guestPosition);
+                }
+
+                if (!guestAccuracy) {
+                    guestAccuracy = L.circle(guestPosition, {
+                        radius: accuracy,
+                        color: "#2a6fd6",
+                        fillColor: "#2a6fd6",
+                        fillOpacity: 0.12,
+                        weight: 1,
+                    }).addTo(map);
+                } else {
+                    guestAccuracy.setLatLng(guestPosition);
+                    guestAccuracy.setRadius(accuracy);
+                }
+
+                guestMarker.bindPopup("{% trans 'Está aqui' %}").openPopup();
+                map.setView(guestPosition, Math.max(map.getZoom(), 16));
+                setLocateButton("📍 {% trans 'A minha localização' %}", false);
+            },
+            () => {
+                setLocateButton("{% trans 'Localização indisponível' %}", false);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000,
+            }
+        );
+    });
 
     const places = JSON.parse(document.getElementById("places-data").textContent);
     const bounds = [];

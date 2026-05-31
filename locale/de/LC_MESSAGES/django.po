@@ -128,3 +128,15 @@ msgstr "Bestellung senden"
 
 msgid "Total a pagar"
 msgstr "Zu zahlender Gesamtbetrag"
+
+msgid "A minha localização"
+msgstr "Mein Standort"
+
+msgid "A localizar..."
+msgstr "Standort wird ermittelt..."
+
+msgid "Localização indisponível"
+msgstr "Standort nicht verfügbar"
+
+msgid "Está aqui"
+msgstr "Sie sind hier"
