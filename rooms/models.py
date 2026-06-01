@@ -42,6 +42,13 @@ class Reservation(models.Model):
         on_delete=models.CASCADE,
     )
     room = models.ForeignKey(Room, verbose_name="quarto", on_delete=models.CASCADE)
+    guest = models.OneToOneField(
+        "accounts.Guest",
+        verbose_name="hóspede criado",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     external_uid = models.CharField("referência iCal", max_length=255)
     title = models.CharField("título", max_length=255, blank=True)
     guest_name = models.CharField("nome do hóspede", max_length=200, blank=True)

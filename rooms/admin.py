@@ -1,11 +1,14 @@
 from datetime import datetime
+import uuid
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.html import format_html
 
+from accounts.models import Guest
 from .models import ICalSync, Reservation, Room
 
 
@@ -182,12 +185,21 @@ class ICalSyncAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ("room", "date_range", "guest_display", "status", "sync", "last_seen_at")
+    list_display = ("room", "date_range", "guest_display", "guest_access", "status", "sync", "last_seen_at")
     list_filter = ("status", "room", "sync", "check_in")
-    search_fields = ("title", "guest_name", "external_uid", "raw_summary", "raw_description")
+    search_fields = (
+        "title",
+        "guest_name",
+        "external_uid",
+        "raw_summary",
+        "raw_description",
+        "guest__name",
+        "guest__access_code",
+    )
     readonly_fields = (
         "sync",
         "room",
+        "guest",
         "external_uid",
         "title",
         "guest_name",
@@ -202,6 +214,7 @@ class ReservationAdmin(admin.ModelAdmin):
     )
     fields = readonly_fields
     ordering = ("check_in", "room")
+    actions = ("create_guests",)
 
     def date_range(self, obj):
         return f"{obj.check_in:%d/%m/%Y} - {obj.check_out:%d/%m/%Y}"
@@ -209,8 +222,53 @@ class ReservationAdmin(admin.ModelAdmin):
     date_range.short_description = "datas"
 
     def guest_display(self, obj):
-        if not obj.guest_name:
+        name = obj.guest.name if obj.guest_id else obj.guest_name
+        if not name:
             return "-"
-        return format_html("<strong>{}</strong>", obj.guest_name)
+        return format_html("<strong>{}</strong>", name)
 
     guest_display.short_description = "hospede"
+
+    def guest_access(self, obj):
+        if not obj.guest_id:
+            return "-"
+        return obj.guest.access_code
+
+    guest_access.short_description = "codigo"
+
+    def create_guests(self, request, queryset):
+        created = 0
+        skipped = 0
+
+        for reservation in queryset.select_related("guest", "room"):
+            if reservation.guest_id or reservation.status == "cancelled":
+                skipped += 1
+                continue
+
+            guest_name = (
+                reservation.guest_name
+                or reservation.title
+                or f"Hospede {reservation.room}"
+            )
+            user = User.objects.create_user(
+                username=f"guest_{uuid.uuid4().hex[:8]}",
+                first_name=guest_name,
+            )
+            guest = Guest.objects.create(
+                user=user,
+                room=reservation.room,
+                name=guest_name,
+                check_in=reservation.check_in,
+                check_out=reservation.check_out,
+                is_active=True,
+            )
+            reservation.guest = guest
+            reservation.save(update_fields=("guest", "updated_at"))
+            created += 1
+
+        self.message_user(
+            request,
+            f"{created} hóspede(s) criado(s). {skipped} reserva(s) ignorada(s).",
+        )
+
+    create_guests.short_description = "Criar hóspedes/códigos das reservas selecionadas"
