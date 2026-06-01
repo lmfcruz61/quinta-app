@@ -140,3 +140,6 @@ msgstr "Location unavailable"
 
 msgid "Está aqui"
 msgstr "You are here"
+
+msgid "Abrir página"
+msgstr "Open page"

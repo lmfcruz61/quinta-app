@@ -16,6 +16,7 @@ class Place(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
     description = models.TextField(blank=True)
+    website_url = models.URLField("link da página", blank=True)
     thumbnail = models.FileField(
         "thumbnail",
         upload_to="places/",

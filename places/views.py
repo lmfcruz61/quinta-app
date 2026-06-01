@@ -11,6 +11,7 @@ def map_view(request):
             "id": place.id,
             "name": place.name,
             "description": place.description,
+            "website_url": place.website_url,
             "latitude": place.latitude,
             "longitude": place.longitude,
             "thumbnail_url": place.thumbnail.url if place.thumbnail else "",

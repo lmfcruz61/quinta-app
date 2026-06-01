@@ -140,3 +140,6 @@ msgstr "Position indisponible"
 
 msgid "Está aqui"
 msgstr "Vous êtes ici"
+
+msgid "Abrir página"
+msgstr "Ouvrir la page"

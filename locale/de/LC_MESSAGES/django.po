@@ -140,3 +140,6 @@ msgstr "Standort nicht verfügbar"
 
 msgid "Está aqui"
 msgstr "Sie sind hier"
+
+msgid "Abrir página"
+msgstr "Seite öffnen"

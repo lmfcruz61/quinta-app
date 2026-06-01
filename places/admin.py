@@ -7,16 +7,16 @@ from .models import Place
 @admin.register(Place)
 class PlaceAdmin(admin.ModelAdmin):
 
-    list_display = ("name", "category", "thumbnail_preview", "is_active", "order")
+    list_display = ("name", "category", "thumbnail_preview", "website_link", "is_active", "order")
     list_filter = ("category", "is_active")
-    search_fields = ("name", "description")
+    search_fields = ("name", "description", "website_url")
     ordering = ("order", "name")
 
     readonly_fields = ("thumbnail_preview", "map_picker")
 
     fieldsets = (
         (None, {
-            "fields": ("name", "category", "description", "thumbnail", "thumbnail_preview", "icon", "is_active", "order")
+            "fields": ("name", "category", "description", "website_url", "thumbnail", "thumbnail_preview", "icon", "is_active", "order")
         }),
         ("Localização", {
             "fields": ("latitude", "longitude", "map_picker")
@@ -55,6 +55,16 @@ class PlaceAdmin(admin.ModelAdmin):
         )
 
     thumbnail_preview.short_description = "thumbnail"
+
+    def website_link(self, obj):
+        if not obj.website_url:
+            return ""
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener">abrir</a>',
+            obj.website_url,
+        )
+
+    website_link.short_description = "link"
 
     class Media:
         css = {
