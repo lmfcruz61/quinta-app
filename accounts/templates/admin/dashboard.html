@@ -32,10 +32,107 @@
         color: var(--body-quiet-color);
         font-size: 13px;
     }
+
+    .quick-guide {
+        margin: 0 0 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--darkened-bg);
+    }
+
+    .quick-guide summary {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        color: var(--body-fg);
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .quick-guide summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .quick-guide-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: var(--primary-fg);
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .quick-guide-content {
+        padding: 0 14px 14px;
+        color: var(--body-fg);
+    }
+
+    .quick-guide-content h3 {
+        margin: 14px 0 6px;
+        font-size: 14px;
+    }
+
+    .quick-guide-content ol,
+    .quick-guide-content ul {
+        margin: 6px 0 12px 22px;
+        padding: 0;
+    }
+
+    .quick-guide-content li {
+        margin: 5px 0;
+        line-height: 1.35;
+    }
+
+    .quick-guide-content code {
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: var(--body-bg);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<details class="quick-guide">
+    <summary>
+        <span class="quick-guide-badge">?</span>
+        <span>{% trans "Quick guide de administração" %}</span>
+    </summary>
+    <div class="quick-guide-content">
+        <h3>{% trans "Reservas iCal" %}</h3>
+        <ol>
+            <li>{% trans "Criar ou confirmar os quartos em Quartos e Reservas > Rooms." %}</li>
+            <li>{% trans "Adicionar cada link em Quartos e Reservas > Sincronizações iCal." %}</li>
+            <li>{% trans "Selecionar a sincronização e executar a ação Sincronizar reservas selecionadas." %}</li>
+            <li>{% trans "Ir a Reservas, selecionar as reservas certas e executar Criar hóspedes/códigos." %}</li>
+        </ol>
+
+        <h3>{% trans "Hóspedes" %}</h3>
+        <ul>
+            <li>{% trans "Cada hóspede tem quarto, datas de estadia e código de acesso." %}</li>
+            <li>{% trans "O código só funciona dentro do período da estadia e se o hóspede estiver ativo." %}</li>
+        </ul>
+
+        <h3>{% trans "Operação diária" %}</h3>
+        <ul>
+            <li>{% trans "Ver mensagens por ler no painel e responder no chat." %}</li>
+            <li>{% trans "Ver encomendas novas e alterar o estado quando necessário." %}</li>
+            <li>{% trans "Confirmar pedidos de pequeno-almoço do dia." %}</li>
+        </ul>
+
+        <h3>{% trans "Conteúdo do cliente" %}</h3>
+        <ul>
+            <li>{% trans "Gerir pratos, preços e fotos em Ementa." %}</li>
+            <li>{% trans "Gerir locais do mapa em Mapa > Locais, incluindo thumbnail, descrição e link." %}</li>
+        </ul>
+    </div>
+</details>
+
 {% if admin_notifications %}
     <div class="dashboard-notifications">
         <a class="dashboard-notification" href="{{ admin_notifications.chat_url }}">
